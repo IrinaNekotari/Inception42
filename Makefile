@@ -10,27 +10,20 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = Bureau
-
-SRC = Bureaucrat.cpp main.cpp
-OBJ = ${SRC:.cpp=.o}
-
-FLAGS = -Wall -Werror -Wextra -std=c++98
-
-all: $(NAME)
-
-.cpp.o:
-	c++ $(FLAGS) -c $< -o $(<:.cpp=.o)
+all:
+	@docker compose -f ./srcs/docker-compose.yml up -d --build
 	
-$(NAME): $(OBJ)
-	c++ $(OBJ) $(FLAGS) -o $(NAME)
+down:
+	@docker compose -f ./srcs/docker-compose.yml down
 	
+re:
+	@docker compose -f ./srcs/docker-compose.yml up -d --build
+
 clean:
-	@rm  $(OBJ)
+	@docker stop $$(docker ps -qa); \
+	docker rm $$(docker ps -qa);\
+	docker rmi -f $$(docker images -qa);\
+	docker volume rm $$(docker volume ls -qa);\
+	docker network rm $$(docker network ls -qa);
 
-fclean: clean
-	@rm $(NAME)
-	
-re: fclean all
-
-.PHONY: all clean fclean re
+.PHONY: all clean down re
