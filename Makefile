@@ -13,6 +13,7 @@
 all:
 	mkdir -p /home/nmascrie/data/wordpress /home/nmascrie/data/mysql
 	@docker-compose -f ./srcs/docker-compose.yml up -d --build
+	@docker ps
 	
 down:
 	@docker compose -f ./srcs/docker-compose.yml down
@@ -20,6 +21,11 @@ down:
 re:
 	@docker compose -f ./srcs/docker-compose.yml down
 	@docker compose -f ./srcs/docker-compose.yml up -d --build
+
+status:
+	@docker ps
+	@docker network ls
+	@docker volume ls
 
 clean:
 	@docker stop $$(docker ps -qa);\
@@ -29,5 +35,6 @@ clean:
 	docker network rm $$(docker network ls -q);\
 	rm -rf /home/nmascrie/data/mysql
 	rm -rf /home/nmascrie/data/wordpress 
+	@docker system prune
 
 .PHONY: all clean down re
