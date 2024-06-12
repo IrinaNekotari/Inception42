@@ -1,34 +1,10 @@
 FROM	debian:buster
 
-RUN	apt-get update -y && apt-get upgrade && apt-get install -y \
-		wget \
-		curl \
-		bash \
-		php \
-		php-cgi \
-		php-mysql \
-		php-fpm \
-		php-pdo \
-		php-gd php-cli \
-		php-mbstring \
-		redis \
-		php-redis
-		
-RUN	curl -0 https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar  \
-		&& chmod +x wp-cli.phar \ 
-		&& mv wp-cli.phar /usr/local/bin/wp
-	
-COPY conf/www.conf /etc/php/7.3/fpm/pool.d/
+RUN	apt update -y 
+RUN	apt install php-fpm php-mysql -y
+RUN	apt install curl -y
 
-RUN	mkdir /run/php
+COPY	./tools/launch_wordpress.sh /
+COPY	./tools/wp-config.php /
 
-COPY	tools/create_wordpress.sh /usr/local/bin/
-RUN		chmod +x /usr/local/bin/create_wordpress.sh
-
-ENTRYPOINT [" /usr/local/bin/create_wordpress.sh"]
-
-WORKDIR /var/www/html/
-
-EXPOSE 9000
-
-CMD ["/usr/sbin/php-fpm7.3", "-F"]
+CMD	[ "./launch_wordpress.sh" ]

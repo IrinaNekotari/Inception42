@@ -11,18 +11,23 @@
 # **************************************************************************** #
 
 all:
+	mkdir -p /home/nmascrie/data/wordpress /home/nmascrie/data/mysql
 	@docker-compose -f ./srcs/docker-compose.yml up -d --build
 	
 down:
 	@docker compose -f ./srcs/docker-compose.yml down
 	
 re:
+	@docker compose -f ./srcs/docker-compose.yml down
 	@docker compose -f ./srcs/docker-compose.yml up -d --build
 
 clean:
-	@docker compose -f ./srcs/docker-compose.yml down
-	@docker rm nginx
-	@docker rm mariadb
-	@docker rm wordpress
+	@docker stop $$(docker ps -qa);\
+	docker rm $$(docker ps -qa);\
+	docker rmi -f $$(docker images -qa);\
+	docker volume rm $$(docker volume ls -q);\
+	docker network rm $$(docker network ls -q);\
+	rm -rf /home/nmascrie/data/mysql
+	rm -rf /home/nmascrie/data/wordpress 
 
 .PHONY: all clean down re
